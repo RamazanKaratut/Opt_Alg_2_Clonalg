@@ -1,0 +1,28 @@
+# Python bytecode (Derlenmiş dosyalar)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Sanal Ortam (Virtual Environments)
+venv/
+.venv/
+env/
+ENV/
+
+# Editör ve IDE Ayarları (VS Code, PyCharm vb.)
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# İşletim Sistemi Dosyaları
+.DS_Store
+Thumbs.db
+
+# Dağıtım ve Paketleme (Eğer ileride paketlersen)
+dist/
+build/
+*.egg-info/
+
+# Log dosyaları
+*.log
