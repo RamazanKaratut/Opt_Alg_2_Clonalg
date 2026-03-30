@@ -1,36 +1,26 @@
 global n populasyon antikor_fitness 
 global Egitim Egitimc Test Testc
-global mesafe_turleri agirlik_turleri tie_turleri
+global split_turleri surrogate_turleri
 
 antikor_fitness = zeros(n, 1);
-egitim_ornek_sayisi = size(Egitim, 1);
 
 for i = 1:n
-    % Genlerden parametreleri cek
-    k_degeri   = populasyon(i, 1);
-    mesafe     = mesafe_turleri{populasyon(i, 2)};
-    agirlik    = agirlik_turleri{populasyon(i, 3)};
-    std_flag   = populasyon(i, 4) == 1; % logical (true/false) yapar
-    tie        = tie_turleri{populasyon(i, 5)};
-    
-    % K degeri egitim setindeki ornek sayisindan buyuk olamaz
-    if k_degeri > egitim_ornek_sayisi
-        k_degeri = egitim_ornek_sayisi;
-    end
+    % Genlerden agac parametrelerini cek
+    max_splits = populasyon(i, 1);
+    min_leaf   = populasyon(i, 2);
+    split_crit = split_turleri{populasyon(i, 3)};
+    surrogate  = surrogate_turleri{populasyon(i, 4)};
     
     try
-        % Modeli Egit
-        mdl = fitcknn(Egitim, Egitimc, ...
-            'NumNeighbors', k_degeri, ...
-            'Distance', mesafe, ...
-            'DistanceWeight', agirlik, ...
-            'Standardize', std_flag, ...
-            'BreakTies', tie);
+        % Karar Agacini (Decision Tree) Egit
+        mdl = fitctree(Egitim, Egitimc, ...
+            'MaxNumSplits', max_splits, ...
+            'MinLeafSize', min_leaf, ...
+            'SplitCriterion', split_crit, ...
+            'Surrogate', surrogate);
         
-        % Test verisi ile tahmin yap
         tahmin = predict(mdl, Test);
         
-        % Dogruluk hesapla (Veri turune gore karsilastirma)
         if iscategorical(Testc) || iscellstr(Testc) || isstring(Testc)
              dogru_sayisi = sum(strcmp(cellstr(tahmin), cellstr(Testc)));
         else
@@ -40,7 +30,6 @@ for i = 1:n
         antikor_fitness(i) = dogru_sayisi / length(Testc);
         
     catch
-        % Uyumsuz parametre cakismalarinda (or: bazi mesafelerde agirlik hesabi patlayabilir)
-        antikor_fitness(i) = 0; 
+        antikor_fitness(i) = 0; % Uyumsuz parametreler patlarsa fitness sifirlanir
     end
 end

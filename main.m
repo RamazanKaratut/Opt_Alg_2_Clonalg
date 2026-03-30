@@ -1,67 +1,74 @@
 global n m populasyon antikor_fitness klon_populasyon klon_fitness ...
-       sinir_degerleri mesafe_turleri agirlik_turleri tie_turleri Egitim Egitimc Test Testc ...
-       best_antikor best_fitness klon_sayisi mutasyon_katsayisi
+       sinir_degerleri split_turleri surrogate_turleri Egitim Egitimc Test Testc ...
+       best_antikor best_fitness ...
+       n_secilen beta rho d_degisecek history
 
-% Baslangic Parametreleri
-n = 20; 
-m = 5;  
-iterasyon = 15;
-klon_sayisi = 5; 
-mutasyon_katsayisi = 0.03;
+% CLONALG Parametreleri (Python koduna sadik kalinarak)
+n = 50;             % pop_size: Populasyon buyuklugu
+n_secilen = 20;     % n_selected: Secilecek en iyi antikor sayisi
+beta = 1.0;         % Klon carpani
+rho = 2.0;          % Mutasyon sabiti (hipermutasyon icin)
+d_degisecek = 10;   % d: Her iterasyonda yenilenecek antikor sayisi
+iterasyon = 30;     % max_iter
 
-% Sinirlar: k(1-30), Mesafe(1-4), Agirlik(1-2), Std(0-1), BreakTies(1-3)
-sinir_degerleri = [1 75; 1 4; 1 2; 0 1; 1 3];
+m = 4;  % Genler: 1:MaxNumSplits, 2:MinLeafSize, 3:SplitCriterion, 4:Surrogate
 
-mesafe_turleri = {'euclidean', 'cityblock', 'chebychev', 'cosine'};
-agirlik_turleri = {'Equal', 'Inverse'};
-tie_turleri = {'smallest', 'nearest', 'random'};
+% Sinirlar: MaxNumSplits(1-100), MinLeafSize(1-50), SplitCriterion(1-3), Surrogate(1-2)
+sinir_degerleri = [1 100; 1 50; 1 3; 1 2];
+
+% Kategorik genlerin karsiliklari
+split_turleri = {'gdi', 'twoing', 'deviance'};
+surrogate_turleri = {'off', 'on'};
+
+history = zeros(iterasyon, 1); % Yakinsama grafigi icin
 
 disp('========================================');
-disp('   YAPAY BAGISIKLIK & KNN BASLIYOR');
+disp('  CLONALG & DECISION TREE OPTIMIZASYONU');
 disp('========================================');
 
 veri_on_isleme; 
-
 disp('-> Ilk populasyon olusturuluyor...');
 ais_populasyon_olustur;
 
-disp('-> Ilk dogruluk hesaplaniyor...');
+disp('-> Ilk afiniteler (dogruluk) hesaplaniyor...');
 ais_hesapla_fitness;
 
-% En iyi adayi bulma (Baslangic)
 [best_fitness, idx] = max(antikor_fitness);
 best_antikor = populasyon(idx, :);
 
-fprintf('\nBaslangic En Iyi Dogruluk: %.4f\n', best_fitness);
+tic; % Sure olcumu baslangici
 
-sayac = 0; 
 for j = 1:iterasyon
-    fprintf('\n--- TUR %d ---\n', j);
-    eski_best = best_fitness;
-    
+    % 1. Adim: Klonlama ve Hipermutasyon
     ais_klonlama_ve_mutasyon;
+    
+    % 2. Adim: Yeni Afiniteleri Hesapla, Secim Yap ve Cesitliligi Koru (d parametresi)
     ais_secim;
     
-    fark = best_fitness - eski_best;
-    if fark > 0
-        sayac = 0;
-        fprintf('  -> Daha iyi bir sonuc bulundu! (+%.4f)\n', fark);
-    else
-        sayac = sayac + 1;
-        fprintf('  -> Degisen bir sey yok. (%d keredir ayni)\n', sayac);
-    end
+    % Tarihceyi kaydet
+    history(j) = best_fitness;
     
-    fprintf('  Guncel En Iyi Fitness : %.4f\n', best_fitness);
-    fprintf('  En Iyi K degeri       : %d\n', best_antikor(1));
+    fprintf('Iterasyon %d: En Iyi Dogruluk = %.6f | MaxSplits: %d, MinLeaf: %d\n', ...
+            j, best_fitness, best_antikor(1), best_antikor(2));
 end
 
+calisma_suresi = toc; % Sure olcumu bitisi
+
 disp('========================================');
-disp('               SONUC');
+disp('               SONUCLAR');
 disp('========================================');
-fprintf('En yuksek dogruluk : %.4f\n', best_fitness);
-fprintf('En iyi k           : %d\n', best_antikor(1));
-fprintf('En iyi mesafe      : %s\n', mesafe_turleri{best_antikor(2)});
-fprintf('En iyi agirlik     : %s\n', agirlik_turleri{best_antikor(3)});
-fprintf('En iyi standardize : %d\n', best_antikor(4));
-fprintf('En iyi BreakTies   : %s\n', tie_turleri{best_antikor(5)});
+fprintf('Calisma Suresi        : %.4f saniye\n', calisma_suresi);
+fprintf('En yuksek dogruluk    : %.6f\n', best_fitness);
+fprintf('En iyi MaxNumSplits   : %d\n', best_antikor(1));
+fprintf('En iyi MinLeafSize    : %d\n', best_antikor(2));
+fprintf('En iyi SplitCriterion : %s\n', split_turleri{best_antikor(3)});
+fprintf('En iyi Surrogate      : %s\n', surrogate_turleri{best_antikor(4)});
 disp('========================================');
+
+% Yakinsama Grafigi (Python'daki plt.plot karsiligi)
+figure;
+plot(1:iterasyon, history, '-o', 'LineWidth', 2);
+xlabel('Iterasyon');
+ylabel('En Iyi Dogruluk (Afinite)');
+title(sprintf('CLONALG Yakinsama Grafigi\nEn Iyi Deger: %.6f | Sure: %.4fs', best_fitness, calisma_suresi));
+grid on;
