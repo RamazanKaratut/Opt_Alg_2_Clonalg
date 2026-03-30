@@ -1,28 +1,15 @@
-# Python bytecode (Derlenmiş dosyalar)
-__pycache__/
-*.py[cod]
-*$py.class
+# MATLAB Otomatik Kayit Dosyalari (Autosave)
+*.asv
+*.m~
 
-# Sanal Ortam (Virtual Environments)
-venv/
-.venv/
-env/
-ENV/
+# MATLAB Cikti Dosyalari (İstege bagli gorseller)
+*.fig
+*.jpg
+*.png
 
-# Editör ve IDE Ayarları (VS Code, PyCharm vb.)
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# İşletim Sistemi Dosyaları
+# Isletim Sistemi Kalintilari
 .DS_Store
 Thumbs.db
 
-# Dağıtım ve Paketleme (Eğer ileride paketlersen)
-dist/
-build/
-*.egg-info/
-
-# Log dosyaları
-*.log
+# MAT Dosyalari (Veri setinizi veya workspace'i Github'a yuklemek ISTEMIYORSANIZ basindaki # isaretini kaldirin)
+# *.mat
