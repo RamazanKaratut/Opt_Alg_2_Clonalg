@@ -1,9 +1,19 @@
+% ANA AKIS DOSYASI
+% Bu script, CLONALG tabanli arama ile yapay sinir agi hiperparametrelerini
+% optimize eder. Her antikor bir NN mimarisi ve egitim ayarini temsil eder.
+
 global n m populasyon antikor_fitness klon_populasyon klon_fitness ...
        sinir_degerleri aktivasyon_turleri lambda_degerleri Egitim Egitimc Test Testc ...
        best_antikor best_fitness ...
        n_secilen beta rho d_degisecek history
 
-% CLONALG Parametreleri
+% CLONALG parametreleri:
+% n            : populasyon buyuklugu
+% n_secilen    : her iterasyonda secilecek en iyi antikor sayisi
+% beta         : klon sayisini etkileyen katsayi
+% rho          : mutasyon orani katsayisi
+% d_degisecek  : cesitlilik icin rastgele yenilenecek birey sayisi
+% iterasyon    : toplam dongu sayisi
 n = 50;             
 n_secilen = 20;     
 beta = 1.0;         
@@ -11,24 +21,26 @@ rho = 2.0;
 d_degisecek = 10;   
 iterasyon = 30;     
 
-% Gen Sayisi: 6 (3 gizli katman boyutu, 1 aktivasyon, 1 lambda, 1 katman sayisi)
+% Gen sayisi: 6
+% 1-3: gizli katman nöron sayilari, 4: aktivasyon tipi,
+% 5: lambda, 6: kullanilacak katman sayisi
 m = 6;  
 
-% Sinirlar: 
-% 1:Layer1(5-100), 2:Layer2(5-100), 3:Layer3(5-100), 
-% 4:Activations(1-4), 5:Lambda(1-6), 6:Katman_Sayisi(1-3)
+% Her gen icin alt-ust sinirlar
 sinir_degerleri = [5 100; 5 100; 5 100; 1 4; 1 6; 1 3];
 
-% Kategorik ve Sayisal Haritalamalar
+% Ayrik gen degerlerinin gercek parametreye map edilmesi
 aktivasyon_turleri = {'relu', 'tanh', 'sigmoid', 'none'};
 lambda_degerleri = [0, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1];
 
+% Her iterasyondaki en iyi fitness degerini saklar (yakinsama grafigi icin)
 history = zeros(iterasyon, 1); 
 
 disp('========================================');
 disp('  CLONALG & NEURAL NETWORK OPTIMIZASYONU');
 disp('========================================');
 
+% Veri hazirla ve ilk populasyonu/fiteness'i olustur
 veri_on_isleme; 
 disp('-> Ilk populasyon olusturuluyor...');
 ais_populasyon_olustur;
@@ -36,15 +48,19 @@ ais_populasyon_olustur;
 disp('-> Ilk afiniteler (dogruluk) hesaplaniyor...');
 ais_hesapla_fitness;
 
+% Baslangic en iyi bireyi belirle
 [best_fitness, idx] = max(antikor_fitness);
 best_antikor = populasyon(idx, :);
 
-tic; 
+tic; % toplam calisma suresini olcmek icin
 
 for j = 1:iterasyon
+    % Secilen antikorlari klonla ve mutasyona ugrat
     ais_klonlama_ve_mutasyon;
+    % Klonlari degerlendir, yeni populasyonu kur ve en iyi bireyi guncelle
     ais_secim;
     
+    % Iterasyon sonu en iyi degeri kaydet
     history(j) = best_fitness;
     
     % Hangi katman yapisi secildi ise ekrana onu basmak icin
@@ -63,7 +79,7 @@ end
 
 calisma_suresi = toc; 
 
-% Finalde En Iyi Katman Dizisini Olustur
+% Final modelini kurmak icin en iyi antikorun katman dizisini cikar
 best_katman_sayisi = best_antikor(6);
 if best_katman_sayisi == 1
     best_layers = [best_antikor(1)];
@@ -85,14 +101,14 @@ fprintf('En iyi Activations    : %s\n', best_act);
 fprintf('En iyi Lambda         : %g\n', best_lmbd);
 disp('========================================');
 
-% 1. Grafik: Yakinsama
+% 1) Yakinsama grafigi: iterasyonlara gore en iyi fitness
 figure;
 plot(1:iterasyon, history, '-o', 'LineWidth', 2);
 xlabel('Iterasyon'); ylabel('En Iyi Dogruluk (Afinite)');
 title(sprintf('CLONALG - Yapay Sinir Agi\nEn Iyi Deger: %.6f', best_fitness));
 grid on;
 
-% 2. Grafik: Final Modeli ve Karmasiklik Matrisi
+% 2) En iyi hiperparametrelerle final modeli egit ve karmasiklik matrisi ciz
 disp('-> Final modeli egitiliyor ve matris ciziliyor...');
 warning('off', 'all'); % Olası uyarıları kapat
 final_mdl = fitcnet(Egitim, Egitimc, ...
@@ -103,6 +119,7 @@ final_mdl = fitcnet(Egitim, Egitimc, ...
     'Standardize', true);
 warning('on', 'all'); % Uyarıları geri aç
 
+% Test tahmini ve siniflandirma performansini gorsellestirme
 final_tahmin = predict(final_mdl, Test);
 figure;
 cm = confusionchart(Testc, final_tahmin);

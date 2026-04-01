@@ -1,39 +1,32 @@
 function [egitim, egitimc, test, testc] = orneklem(data)
+% ORNEKLEM ALMA FONKSIYONU (SISTEMATIK ORNEKLEME)
+% Giris:
+%   data -> Son sutunu sinif etiketi olan veri matrisi
+% Cikis:
+%   egitim, egitimc -> egitim ozellikleri ve etiketleri
+%   test, testc     -> test ozellikleri ve etiketleri
+
+% Teste ayrilacak veri orani (yuzde)
 ornekyuzde = 30 ;
-% Veri setinden örneklem oluþturma programý
 
-% SÝSTEMATÝK ÖRNEKLEME
- 
-% Toplum hacminin 1000 dolaylarýnda olduðu ve
-% birimlere 1’den N’e kadar sýra numarasý verilebildiði
-% durumlarda uygulanýr . 
-% n örnek; 
-% 1) Devir sayýsý (d) ; d <= N/n
-% 2) Baþlangýç sayýsý (a); 1<= a <= d belirlenir .
-% 3) Örnek no’larý a, a+d, a+2d, ..., a+(n-1)d þeklinde
-% belirlenir .
-
-% Not: Örneklem oluþturulurken satýr sayýlarý arasýnda örnek seçilir. Sütunlar dikkate alýnmaz.
-% Not: Genel veri setinin öncelikle seçilecek özelliðie göre sýralanmasý gerekmektedir.
-% Sýralama için  B = sortrows(A,3) komutu kullanýlabilir. A sýralanacak
-% matris, 3 ise referans olarak sýralanacak matrisi ifade eder.
-
+% Toplam gozlem sayisi
 N =  size(data,1);
-% ornekyuzde = 25 ;
+% Teste alinacak toplam ornek sayisi
 n = floor(N*ornekyuzde/100) ;
 
-% n = orneklem, N adet örnekten seçilecek yüzdelik miktarý miktarýný temsil eder.
-
-% Devir sayýsýnýn hesaplanmasý
+% Sistematik ornekleme adimi (devir sayisi)
 d = round(N/n) ; 
 
-% Baþlangýç sayýsý (a)
+% Baslangic indeksi (istenirse 1..d araliginda rastgele secilebilir)
 a = 1 ;
+% Toplam sutun sayisi (son sutun sinif)
 s = size(data,2) ;
-% Örneklenmiþ matris oluþturma (OM) Test verisi olarak kullanýlacaktýr.
-% Test Veri seti
+
+% TEST VERI SETI OLUSTURMA:
+% a, a+d, a+2d, ... indekslerinden satir secilir.
 for i=1:n
     B=(a+d*(i-1));
+    % Indeks N'i asarsa basa sararak devam et
     if (B>N)
         C=B-N;
     else
@@ -46,7 +39,8 @@ test = test1(:,1:s-1) ;
 
 testc = test1(:,s) ;
 
-% Eðitim Veri seti
+% EGITIM VERI SETI OLUSTURMA:
+% Teste secilen satirlar ana veriden silinir.
 
 egitim1 = data ;
 for i=1:n
