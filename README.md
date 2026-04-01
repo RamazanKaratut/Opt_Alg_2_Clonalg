@@ -48,10 +48,12 @@ Algoritma, 1, 2 ve 3 katmanlı tüm kombinasyonları denedikten sonra problemi �
 
 ### Yakınsama (Convergence) Grafiği
 Bu grafik, CLONALG algoritmasının 30 iterasyon boyunca en iyi çözüme nasıl adım adım yaklaştığını göstermektedir.
+
 ![Afinite Grafiği](afinite_grafigi.png)
 
 ### Karmaşıklık Matrisi (Confusion Matrix)
 Aşağıdaki karmaşıklık matrisi, bulunan en iyi ağ mimarisinin (`[16 12 60] - relu`) test verisi üzerindeki sınıflandırma performansını detaylandırmaktadır.
+
 ![Karmaşıklık Matrisi](karmasiklik_matrisi.png)
 
 ## 📂 Dosya Yapısı
