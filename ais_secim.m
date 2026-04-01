@@ -1,21 +1,35 @@
 global n m populasyon antikor_fitness klon_populasyon klon_fitness ...
-       Egitim Egitimc Test Testc split_turleri surrogate_turleri ...
+       Egitim Egitimc Test Testc aktivasyon_turleri lambda_degerleri ...
        best_antikor best_fitness d_degisecek sinir_degerleri
 
 toplam_klon = size(klon_populasyon, 1);
 klon_fitness = zeros(toplam_klon, 1);
 
+warning('off', 'all'); % Egitim uyarilarini sustur
+
 for i = 1:toplam_klon
-    max_splits = klon_populasyon(i, 1);
-    min_leaf   = klon_populasyon(i, 2);
-    split_crit = split_turleri{klon_populasyon(i, 3)};
-    surrogate  = surrogate_turleri{klon_populasyon(i, 4)};
-    min_parent = klon_populasyon(i, 5); % 5. GEN
+    L1   = klon_populasyon(i, 1);
+    L2   = klon_populasyon(i, 2);
+    L3   = klon_populasyon(i, 3);
+    act  = aktivasyon_turleri{klon_populasyon(i, 4)};
+    lmbd = lambda_degerleri(klon_populasyon(i, 5));
+    katman_sayisi = klon_populasyon(i, 6); % 6. GEN
+    
+    if katman_sayisi == 1
+        layers = [L1];
+    elseif katman_sayisi == 2
+        layers = [L1, L2];
+    else
+        layers = [L1, L2, L3];
+    end
     
     try
-        mdl = fitctree(Egitim, Egitimc, 'MaxNumSplits', max_splits, ...
-            'MinLeafSize', min_leaf, 'SplitCriterion', split_crit, ...
-            'Surrogate', surrogate, 'MinParentSize', min_parent);
+        mdl = fitcnet(Egitim, Egitimc, ...
+            'LayerSizes', layers, ...
+            'Activations', act, ...
+            'Lambda', lmbd, ...
+            'IterationLimit', 500, ...
+            'Standardize', true);
             
         tahmin = predict(mdl, Test);
         
@@ -29,6 +43,8 @@ for i = 1:toplam_klon
         klon_fitness(i) = 0;
     end
 end
+
+warning('on', 'all'); % Dongu sonu uyarilari ac
 
 combined = [populasyon; klon_populasyon];
 combined_affinities = [antikor_fitness; klon_fitness];

@@ -1,47 +1,41 @@
-# CLONALG ile Karar Ağacı (Decision Tree) Hiperparametre Optimizasyonu
+# CLONALG ile Yapay Sinir Ağı (Neural Network) Optimizasyonu
 
-Bu proje, biyolojik bağışıklık sisteminin antijenlere karşı antikor üretme sürecini taklit eden **Klonal Seçim Algoritması (CLONALG)** kullanılarak, makine öğrenmesi modellerinin hiperparametrelerini optimize etmek amacıyla MATLAB üzerinde geliştirilmiştir.
+Bu proje, biyolojik bağışıklık sisteminin antijenlere karşı antikor üretme sürecini taklit eden **Klonal Seçim Algoritması (CLONALG)** kullanılarak, MATLAB üzerinde geliştirilen çok katmanlı yapay sinir ağlarının (Trilayered Neural Network) hiperparametrelerini optimize etmeyi hedefler.
 
 ## 🚀 Projenin Amacı
-Geleneksel hiperparametre arama yöntemleri (Grid Search, Random Search) yerine, evrimsel ve bağışıklık tabanlı bir yaklaşım olan CLONALG kullanılarak **Karar Ağacı (Decision Tree - `fitctree`)** modelinin en yüksek doğruluk (accuracy) değerlerine ulaşması hedeflenmiştir. 
+Geleneksel hiperparametre arama yöntemleri yerine evrimsel bir yaklaşım olan CLONALG kullanılarak **Yapay Sinir Ağı (`fitcnet`)** modelinin en yüksek doğruluk (accuracy) değerlerine ulaşması hedeflenmiştir. 
 
-Optimizasyon sürecinde karar ağacının ezberlemesini (overfitting) önleyen ve yapısını belirleyen **5 kritik hiperparametre** hedeflenmiştir:
-1. `MaxNumSplits` (Maksimum Bölünme Sayısı: 1-100)
-2. `MinLeafSize` (Minimum Yaprak Boyutu: 1-50)
-3. `MinParentSize` (Bölünme İçin Gereken Minimum Veri: 2-100)
-4. `SplitCriterion` (Bölünme Kriteri: Gini, Twoing, Deviance)
-5. `Surrogate` (Eksik Veri Kararları: On, Off)
+Sinir ağının mimarisini ve öğrenme yeteneğini belirleyen **5 kritik hiperparametre** gen olarak kodlanmış ve optimize edilmiştir:
+1. `Layer 1 Size`: İlk gizli katmandaki nöron sayısı (5-100)
+2. `Layer 2 Size`: İkinci gizli katmandaki nöron sayısı (5-100)
+3. `Layer 3 Size`: Üçüncü gizli katmandaki nöron sayısı (5-100)
+4. `Activations`: Aktivasyon fonksiyonu (relu, tanh, sigmoid, none)
+5. `Lambda`: L2 Regülarizasyon (Aşırı öğrenmeyi önleme) katsayısı
 
 ## 🧬 Algoritma Mantığı
-CLONALG algoritması şu adımları izleyerek en iyi parametre setini bulur:
-1. **Antikor Üretimi:** Rastgele Decision Tree hiperparametre setleri (Kromozom/Gen) oluşturulur.
-2. **Afinite Hesaplama:** Modeller bu parametrelerle eğitilir ve test seti üzerindeki doğruluk oranları (afinite) ölçülür.
-3. **Klonlama:** En başarılı antikorlar (parametreler) başarı oranlarına göre orantılı olarak çoğaltılır (İyi olan çok kopyalanır).
-4. **Hipermutasyon:** Başarısı düşük olan klonlara daha yüksek, başarılı olanlara daha düşük mutasyon uygulanarak arama uzayı taranır (Ters orantılı mutasyon).
-5. **Çeşitlilik Koruma (Diversity Maintenance):** Popülasyonun en kötü üyeleri atılarak yerlerine tamamen rastgele yeni çözümler eklenir (Lokal minimumdan kaçış).
+CLONALG algoritması şu adımları izler:
+1. **Antikor Üretimi:** Rastgele ağ mimarileri ve hiperparametre setleri (Kromozom/Gen) oluşturulur.
+2. **Afinite Hesaplama:** Sinir ağları bu parametrelerle eğitilir ve test seti üzerindeki doğruluk oranları (afinite) ölçülür.
+3. **Klonlama:** En başarılı antikorlar (ağ mimarileri) başarı oranlarına göre orantılı olarak çoğaltılır.
+4. **Hipermutasyon:** Başarısı düşük olan klonlara daha yüksek, başarılı olanlara daha düşük mutasyon uygulanarak arama uzayı taranır.
+5. **Çeşitlilik Koruma (Diversity Maintenance):** Popülasyonun en kötü üyeleri atılarak yerlerine tamamen rastgele yeni ağ çözümleri eklenir.
 
 ## 📂 Dosya Yapısı
-Proje, modüler bir yapıda tasarlanmıştır:
-* `main.m`: Projenin ana giriş noktasıdır. Başlangıç parametrelerini (pop_size, beta, rho vb.) belirler ve döngüyü başlatır.
-* `veri_on_isleme.m`: Eğitim ve Test verilerini (Feature ve Label) workspace'e yükler veya düzenler.
-* `ais_populasyon_olustur.m`: Başlangıç popülasyonunu belirlenen sınırlar dahilinde rastgele üretir.
-* `ais_hesapla_fitness.m`: Popülasyondaki parametreleri `fitctree` modeline göndererek afinite (doğruluk) skorlarını hesaplar.
-* `ais_klonlama_ve_mutasyon.m`: En iyi antikorları seçer, orantılı klonlar ve ters orantılı hipermutasyona uğratır.
-* `ais_secim.m`: Ana popülasyon ile mutantları birleştirir, en iyileri seçer ve en kötüleri yenileyerek çeşitliliği korur.
+* `main.m`: Projenin ana giriş noktasıdır ve optimizasyon döngüsünü yönetir.
+* `veri_on_isleme.m`: Veri setini yükler ve Eğitim/Test olarak böler.
+* `ais_populasyon_olustur.m`: Başlangıç antikorlarını üretir.
+* `ais_hesapla_fitness.m`: `fitcnet` modelini eğiterek doğruluğu (afiniteyi) hesaplar.
+* `ais_klonlama_ve_mutasyon.m`: En iyi modelleri seçer, orantılı klonlar ve ters orantılı mutasyona uğratır.
+* `ais_secim.m`: Çeşitliliği koruyarak yeni jenerasyonu belirler.
 
 ## 📊 Elde Edilen Sonuçlar
-Proje kapsamında veri seti üzerinde yapılan testlerde şu sonuçlar elde edilmiştir:
 
-| Model | Varsayılan Başarı | CLONALG Optimize Başarı | Artış | En İyi Parametreler |
-| :--- | :---: | :---: | :---: | :--- |
-| Karar Ağacı (Decision Tree) | *[Hesaplanacak]* | ***[Hesaplanacak]*** | *[Hesaplanacak]* | *MaxSplits: -* <br> *MinLeaf: -* <br> *MinParent: -* <br> *Split: -* <br> *Surrogate: -* |
-
-*(Not: Algoritma çalıştırıldıktan sonra elde edilen en iyi sonuçlar buraya eklenecektir.)*
+| Model | Varsayılan Başarı | CLONALG Optimize Başarı | En İyi Ağ Mimarisi |
+| :--- | :---: | :---: | :--- |
+| Yapay Sinir Ağı (NN) | *[Hesaplanacak]* | ***[Hesaplanacak]*** | *Katmanlar: -* <br> *Aktivasyon: -* <br> *Lambda: -* |
 
 ## 🛠️ Kurulum ve Çalıştırma
-Projenin çalışması için **MATLAB** ve **Statistics and Machine Learning Toolbox** kurulu olmalıdır. Harici bir kütüphane kurulumuna (örn. requirements.txt) gerek yoktur.
-
-1. Proje dosyalarını (`.m` uzantılı) aynı klasöre dizin.
-2. `Egitim`, `Egitimc`, `Test` ve `Testc` verilerinizi MATLAB workspace'ine alın (Eğer boşsa `veri_on_isleme.m` örnek olarak Fisher Iris veri setini yükleyecektir).
-3. MATLAB üzerinden `main.m` dosyasını çalıştırın.
-4. Komut penceresinden iterasyonları takip edebilir, çalışma sonunda ekrana gelecek yakınsama (convergence) grafiğini inceleyebilirsiniz.
+Çalıştırmak için **MATLAB** ve **Statistics and Machine Learning Toolbox** gereklidir.
+1. Proje dosyalarını (`.m`) aynı dizine yerleştirin.
+2. Eğitim ve Test verilerinizi workspace'e alın.
+3. `main.m` dosyasını çalıştırın.

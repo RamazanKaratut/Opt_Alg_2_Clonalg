@@ -1,25 +1,37 @@
 global n populasyon antikor_fitness 
 global Egitim Egitimc Test Testc
-global split_turleri surrogate_turleri
+global aktivasyon_turleri lambda_degerleri
 
 antikor_fitness = zeros(n, 1);
 
+warning('off', 'all'); % Egitim sirasindaki gereksiz MATLAB uyarilarini (Solver failed vb.) engelle
+
 for i = 1:n
-    % Genlerden 5 agac parametresini cek
-    max_splits = populasyon(i, 1);
-    min_leaf   = populasyon(i, 2);
-    split_crit = split_turleri{populasyon(i, 3)};
-    surrogate  = surrogate_turleri{populasyon(i, 4)};
-    min_parent = populasyon(i, 5); % 5. GEN
+    % Genleri cek
+    L1   = populasyon(i, 1);
+    L2   = populasyon(i, 2);
+    L3   = populasyon(i, 3);
+    act  = aktivasyon_turleri{populasyon(i, 4)};
+    lmbd = lambda_degerleri(populasyon(i, 5));
+    katman_sayisi = populasyon(i, 6); % 6. GEN: Katman Sayisi
+    
+    % Dinamik Katman Dizisi
+    if katman_sayisi == 1
+        layers = [L1];
+    elseif katman_sayisi == 2
+        layers = [L1, L2];
+    else
+        layers = [L1, L2, L3];
+    end
     
     try
-        % Karar Agacini Egit (5 Parametre ile)
-        mdl = fitctree(Egitim, Egitimc, ...
-            'MaxNumSplits', max_splits, ...
-            'MinLeafSize', min_leaf, ...
-            'SplitCriterion', split_crit, ...
-            'Surrogate', surrogate, ...
-            'MinParentSize', min_parent);
+        % Neural Network Egitimi
+        mdl = fitcnet(Egitim, Egitimc, ...
+            'LayerSizes', layers, ...
+            'Activations', act, ...
+            'Lambda', lmbd, ...
+            'IterationLimit', 500, ...
+            'Standardize', true);
         
         tahmin = predict(mdl, Test);
         
@@ -35,3 +47,5 @@ for i = 1:n
         antikor_fitness(i) = 0; 
     end
 end
+
+warning('on', 'all'); % Egitim dongusu bitince uyarilari normal haline dondur
