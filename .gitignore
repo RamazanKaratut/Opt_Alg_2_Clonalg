@@ -5,7 +5,6 @@
 # MATLAB Cikti Dosyalari (İstege bagli gorseller)
 *.fig
 *.jpg
-*.png
 
 # Isletim Sistemi Kalintilari
 .DS_Store
