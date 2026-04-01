@@ -4,9 +4,12 @@ global aktivasyon_turleri lambda_degerleri
 
 antikor_fitness = zeros(n, 1);
 
-warning('off', 'all'); % Egitim sirasindaki gereksiz MATLAB uyarilarini (Solver failed vb.) engelle
+warning('off', 'all'); % Egitim sirasindaki gereksiz MATLAB uyarilarini engelle
 
 for i = 1:n
+    % Ekrana anlik durumu bas (ayni satirda guncellemek yerine alt alta yazar)
+    fprintf('  -> [Ilk Populasyon] Antikor %d / %d egitiliyor...\n', i, n);
+    
     % Genleri cek
     L1   = populasyon(i, 1);
     L2   = populasyon(i, 2);
@@ -48,4 +51,4 @@ for i = 1:n
     end
 end
 
-warning('on', 'all'); % Egitim dongusu bitince uyarilari normal haline dondur
+warning('on', 'all');

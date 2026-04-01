@@ -8,6 +8,11 @@ klon_fitness = zeros(toplam_klon, 1);
 warning('off', 'all'); % Egitim uyarilarini sustur
 
 for i = 1:toplam_klon
+    % Ekrani cok doldurmamak icin sadece belirli araliklarla bilgi ver
+    if mod(i, 10) == 0 || i == 1 || i == toplam_klon
+        fprintf('  -> [Klonlar] Mutant Klon %d / %d egitiliyor...\n', i, toplam_klon);
+    end
+
     L1   = klon_populasyon(i, 1);
     L2   = klon_populasyon(i, 2);
     L3   = klon_populasyon(i, 3);
