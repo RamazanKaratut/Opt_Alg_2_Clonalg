@@ -49,7 +49,7 @@ flowchart TD
     F --> H
     G --> H
     H --> I[predict test]
-    I --> J[fitness dogru_sayisi bolu test_adedi]
+    I --> J[fitness dogru_sayisi bolu<br/>test_adedi]
     J --> K([Cikti: antikor_fitness])
 ```
 
