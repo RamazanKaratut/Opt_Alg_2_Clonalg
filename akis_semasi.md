@@ -1,3 +1,6 @@
+# Proje Akis Semasi
+
+```mermaid
 flowchart TD
     A([Baslat: main.m]) --> B[Global degiskenleri ve CLONALG parametrelerini tanimla]
     B --> C[Gen uzayi sinirlari: 6 gen]
@@ -74,3 +77,4 @@ flowchart TD
         N13 -- Hayir --> N15[best degismez]
     end
     N -. icerir .-> N1
+```
