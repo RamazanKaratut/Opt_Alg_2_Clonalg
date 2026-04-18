@@ -11,15 +11,15 @@ Ana akista cagri eslestirmesi:
 
 ```mermaid
 flowchart TD
-    A([Baslat main.m]) --> B[CLONALG parametrelerini ayarla]
-    B --> C[Gen sinirlarini tanimla 6 gen]
+    A([Baslat main.m]) --> B[CLONALG parametrelerini<br/>ayarla]
+    B --> C[Gen sinirlarini tanimla<br/>6 gen]
     C --> D[veri_on_isleme]
-    D --> E[Ilk populasyonu olustur n x m]
+    D --> E[Ilk populasyonu olustur<br/>n x m]
     E --> F[ais_hesapla_fitness cagir]
-    F --> G[Baslangic best_fitness ve best_antikor sec]
+    F --> G[Baslangic best_fitness ve<br/>best_antikor sec]
     G --> H[tic baslat]
     H --> I{Iterasyon devam ediyor mu}
-    I -- Evet --> J[ais_klonlama_ve_mutasyon cagir]
+    I -- Evet --> J[ais_klonlama_ve_mutasyon<br/>cagir]
     J --> K[ais_secim cagir]
     K --> L[history degerini kaydet]
     L --> M[Iterasyon ozeti yazdir]
@@ -57,8 +57,8 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A([Girdi:<br/>populasyon + antikor_fitness]) --> B[Fitnesse gore sirala]
-    B --> C[En iyi n_secilen antikoru sec]
+    A([Girdi:<br/>populasyon +<br/>antikor_fitness]) --> B[Fitnesse gore sirala]
+    B --> C[En iyi n_secilen<br/>antikoru sec]
     C --> D[Secilen afiniteleri topla]
     D --> E{Toplam afinite sifir mi}
     E -- Evet --> F[toplam_afinite = 1]
@@ -82,7 +82,7 @@ flowchart TD
     D --> E[Fitnesse gore sirala]
     E --> F[unique rows ile<br/>tekrarli bireyleri ele]
     F --> G[Yeni populasyon ve<br/>fitness alanini ayir]
-    G --> H[En iyi benzersiz bireyleri kopyala]
+    G --> H[En iyi benzersiz<br/>bireyleri kopyala]
     H --> I{Yeni nesil doldu mu}
     I -- Hayir --> J[Kalanlari rastgele doldur<br/>fitness sifir]
     I -- Evet --> K[Doldurma adimini atla]
