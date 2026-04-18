@@ -32,32 +32,21 @@ for i = 1:n
         layers = [L1, L2, L3];
     end
     
-    try
-        % Modeli secilen hiperparametrelerle egit
-        mdl = fitcnet(Egitim, Egitimc, ...
-            'LayerSizes', layers, ...
-            'Activations', act, ...
-            'Lambda', lmbd, ...
-            'IterationLimit', 500, ...
-            'Standardize', true);
-        
-        % Test seti tahmini al
-        tahmin = predict(mdl, Test);
-        
-        % Etiket turune gore dogru sayisini hesapla
-        if iscategorical(Testc) || iscellstr(Testc) || isstring(Testc)
-             dogru_sayisi = sum(strcmp(cellstr(tahmin), cellstr(Testc)));
-        else
-             dogru_sayisi = sum(tahmin == Testc);
-        end
-        
-        % Fitness = dogru tahmin orani
-        antikor_fitness(i) = dogru_sayisi / length(Testc);
-        
-    catch
-        % Egitim basarisizsa antikoru en dusuk fitness ile cezalandir
-        antikor_fitness(i) = 0; 
-    end
+    % Modeli secilen hiperparametrelerle egit
+    mdl = fitcnet(Egitim, Egitimc, ...
+        'LayerSizes', layers, ...
+        'Activations', act, ...
+        'Lambda', lmbd, ...
+        'IterationLimit', 500, ...
+        'Standardize', true);
+    
+    % Test seti tahmini al
+    tahmin = predict(mdl, Test);
+    
+    dogru_sayisi = sum(tahmin == Testc);
+    
+    % Fitness = dogru tahmin orani
+    antikor_fitness(i) = dogru_sayisi / length(Testc);
 end
 
 warning('on', 'all');

@@ -1,5 +1,5 @@
 % ANA AKIS DOSYASI
-% Bu script, CLONALG tabanli arama ile yapay sinir agi hiperparametrelerini
+% Bu script, Yapay Bağışıklık Algoritmasını (CLONALG) tabanli arama ile yapay sinir agi hiperparametrelerini
 % optimize eder. Her antikor bir NN mimarisi ve egitim ayarini temsil eder.
 
 global n m populasyon antikor_fitness klon_populasyon klon_fitness ...
@@ -7,7 +7,7 @@ global n m populasyon antikor_fitness klon_populasyon klon_fitness ...
        best_antikor best_fitness ...
        n_secilen beta rho d_degisecek history
 
-% CLONALG parametreleri:
+% Yapay Bağışıklık Algoritmasını (CLONALG) parametreleri:
 % n            : populasyon buyuklugu
 % n_secilen    : her iterasyonda secilecek en iyi antikor sayisi
 % beta         : klon sayisini etkileyen katsayi
@@ -30,7 +30,10 @@ m = 6;
 sinir_degerleri = [5 100; 5 100; 5 100; 1 4; 1 6; 1 3];
 
 % Ayrik gen degerlerinin gercek parametreye map edilmesi
+% Aktivasyon Fonksiyonları
 aktivasyon_turleri = {'relu', 'tanh', 'sigmoid', 'none'};
+% L2 Regülarizasyonu, matematiksel olarak ağın içindeki ağırlıkların
+% (katsayıların) çok fazla büyümesine ceza keser.
 lambda_degerleri = [0, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1];
 
 % Her iterasyondaki en iyi fitness degerini saklar (yakinsama grafigi icin)

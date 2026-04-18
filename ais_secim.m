@@ -34,28 +34,20 @@ for i = 1:toplam_klon
         layers = [L1, L2, L3];
     end
     
-    try
-        % Klon antikorun temsil ettigi NN modelini egit
-        mdl = fitcnet(Egitim, Egitimc, ...
-            'LayerSizes', layers, ...
-            'Activations', act, ...
-            'Lambda', lmbd, ...
-            'IterationLimit', 500, ...
-            'Standardize', true);
-            
-        % Test tahmini ve fitness hesabi
-        tahmin = predict(mdl, Test);
+    % Klon antikorun temsil ettigi NN modelini egit
+    mdl = fitcnet(Egitim, Egitimc, ...
+        'LayerSizes', layers, ...
+        'Activations', act, ...
+        'Lambda', lmbd, ...
+        'IterationLimit', 500, ...
+        'Standardize', true);
         
-        if iscategorical(Testc) || iscellstr(Testc) || isstring(Testc)
-             dogru_sayisi = sum(strcmp(cellstr(tahmin), cellstr(Testc)));
-        else
-             dogru_sayisi = sum(tahmin == Testc);
-        end
-        klon_fitness(i) = dogru_sayisi / length(Testc);
-    catch
-        % Hata alan klonlara sifir fitness ver
-        klon_fitness(i) = 0;
-    end
+    % Test tahmini ve fitness hesabi
+    tahmin = predict(mdl, Test);
+
+    dogru_sayisi = sum(tahmin == Testc);
+
+    klon_fitness(i) = dogru_sayisi / length(Testc);
 end
 
 warning('on', 'all'); % Dongu sonu uyarilari ac
