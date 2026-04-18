@@ -40,7 +40,7 @@ flowchart TD
 ```mermaid
 flowchart TD
     A([Girdi: populasyon]) --> B[for i = 1..n]
-    B --> C[Genleri coz: L1 L2 L3 act lambda katman_sayisi]
+    B --> C[Genleri coz<br/>L1 L2 L3 act lambda<br/>katman_sayisi]
     C --> D{Katman sayisi}
     D -- 1 --> E[layers L1]
     D -- 2 --> F[layers L1 L2]
@@ -57,7 +57,7 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A([Girdi: populasyon + antikor_fitness]) --> B[Fitnesse gore sirala]
+    A([Girdi:<br/>populasyon + antikor_fitness]) --> B[Fitnesse gore sirala]
     B --> C[En iyi n_secilen antikoru sec]
     C --> D[Secilen afiniteleri topla]
     D --> E{Toplam afinite sifir mi}
@@ -67,7 +67,7 @@ flowchart TD
     G --> H
     H --> I[n_clones hesapla]
     I --> J[mutation_rate hesapla]
-    J --> K[Her klonda her gen icin mutasyon dene]
+    J --> K[Her klonda her gen icin<br/>mutasyon dene]
     K --> L[Mutant klonlari havuza ekle]
     L --> M([Cikti: klon_populasyon])
 ```
@@ -76,22 +76,22 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A([Girdi: populasyon + antikor_fitness + klon_populasyon]) --> B[Toplam klon sayisini al]
-    B --> C[Her klonu egit ve klon_fitness hesapla]
+    A([Girdi:<br/>populasyon + fitness<br/>+ klon_populasyon]) --> B[Toplam klon sayisini al]
+    B --> C[Her klonu egit ve<br/>klon_fitness hesapla]
     C --> D[Populasyon ve klonlari birlestir]
     D --> E[Fitnesse gore sirala]
-    E --> F[unique rows ile tekrarli bireyleri ele]
-    F --> G[Yeni populasyon ve fitness alanini ayir]
+    E --> F[unique rows ile<br/>tekrarli bireyleri ele]
+    F --> G[Yeni populasyon ve<br/>fitness alanini ayir]
     G --> H[En iyi benzersiz bireyleri kopyala]
     H --> I{Yeni nesil doldu mu}
-    I -- Hayir --> J[Kalanlari rastgele doldur fitness sifir]
+    I -- Hayir --> J[Kalanlari rastgele doldur<br/>fitness sifir]
     I -- Evet --> K[Doldurma adimini atla]
-    J --> L[Cesitlilik icin son d_degisecek bireyi yenile]
+    J --> L[Cesitlilik icin son<br/>d_degisecek bireyi yenile]
     K --> L
-    L --> M[populasyon ve antikor_fitness guncelle]
+    L --> M[populasyon ve<br/>antikor_fitness guncelle]
     M --> N{best_fitness guncellenecek mi}
-    N -- Evet --> O[best_fitness ve best_antikor guncelle]
+    N -- Evet --> O[best_fitness ve<br/>best_antikor guncelle]
     N -- Hayir --> P[best degeri koru]
-    O --> Q([Cikti: yeni populasyon + best])
+    O --> Q([Cikti:<br/>yeni populasyon + best])
     P --> Q
 ```
