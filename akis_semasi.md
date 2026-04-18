@@ -1,80 +1,97 @@
 # Proje Akis Semasi
 
+Alt akislar ayri cizildi ki gorunum karmasik olmasin ve her adimin girdisi/ciktisi net olsun.
+
+Ana akista cagri eslestirmesi:
+- ais_hesapla_fitness: Ana akis adimi F
+- ais_klonlama_ve_mutasyon: Ana akis adimi J
+- ais_secim: Ana akis adimi K
+
+## 1) Ana Akis
+
 ```mermaid
 flowchart TD
-    A([Baslat main.m]) --> B[Global degiskenler ve CLONALG parametreleri]
-    B --> C[Gen uzayi sinirlari 6 gen]
-    C --> D[veri_on_isleme cagir]
-    D --> E{Egitim ve Test verisi hazir mi}
-    E -- Evet --> F[Mevcut Egitim Egitimc Test Testc kullan]
-    E -- Hayir --> G[Fisher Iris yukle ve HoldOut 0.3 ile bol]
-    F --> H[Ilk populasyonu olustur n x m]
+    A([Baslat: main.m]) --> B[CLONALG parametrelerini ayarla]
+    B --> C[Gen sinirlarini tanimla (6 gen)]
+    C --> D[veri_on_isleme]
+    D --> E[Ilk populasyonu olustur (n x m)]
+    E --> F[ais_hesapla_fitness cagir]
+    F --> G[Baslangic best_fitness ve best_antikor sec]
+    G --> H[tic baslat]
+    H --> I{Iterasyon devam ediyor mu?}
+    I -- Evet --> J[ais_klonlama_ve_mutasyon cagir]
+    J --> K[ais_secim cagir]
+    K --> L[history(j) = best_fitness]
+    L --> M[Iterasyon ozeti yazdir]
+    M --> N[j = j + 1]
+    N --> I
+    I -- Hayir --> O[toc ile toplam sureyi al]
+    O --> P[best_antikoru decode et]
+    P --> Q[Sonuclari yazdir]
+    Q --> R[Yakinsama grafigini ciz]
+    R --> S[Final modeli egit]
+    S --> T[Test tahmini al]
+    T --> U[Confusion chart olustur]
+    U --> V([Bitis])
+```
+
+## 2) ais_hesapla_fitness Alt Akisi
+
+```mermaid
+flowchart TD
+    A([Girdi: populasyon]) --> B[for i = 1..n]
+    B --> C[Genleri coz: L1 L2 L3 act lambda katman_sayisi]
+    C --> D{Katman sayisi}
+    D -- 1 --> E[layers = [L1]]
+    D -- 2 --> F[layers = [L1 L2]]
+    D -- 3 --> G[layers = [L1 L2 L3]]
+    E --> H[fitcnet ile modeli egit]
+    F --> H
     G --> H
-    H --> I[Ilk populasyon fitness hesapla]
-    I --> J[Baslangic best_fitness ve best_antikor sec]
-    J --> K[tic baslat]
-    K --> L{Iterasyon devam ediyor mu}
-    L -- Evet --> M[ais_klonlama_ve_mutasyon]
-    M --> N[ais_secim]
-    N --> O[history dizisine best_fitness yaz]
-    O --> P[Iterasyon ozetini yazdir]
-    P --> Q[j degerini bir arttir]
-    Q --> L
-    L -- Hayir --> R[toc ile toplam sureyi al]
-    R --> S[best_antikoru decode et layers act lambda]
-    S --> T[Sonuclari yazdir]
-    T --> U[Yakinsama grafigi ciz]
-    U --> V[Final modeli en iyi hiperparametrelerle egit]
-    V --> W[Test tahmini al]
-    W --> X[Confusion chart olustur]
-    X --> Y([Bitis])
+    H --> I[predict(Test)]
+    I --> J[fitness(i) = dogru_sayisi / test_adedi]
+    J --> K([Cikti: antikor_fitness])
+```
 
-    subgraph F1[ais_hesapla_fitness alt akisi]
-        I1[for i birden n e] --> I2[Genleri coz L1 L2 L3 act lambda katman_sayisi]
-        I2 --> I3{Katman sayisi}
-        I3 -- 1 --> I4[layers L1]
-        I3 -- 2 --> I5[layers L1 L2]
-        I3 -- 3 --> I6[layers L1 L2 L3]
-        I4 --> I7[fitcnet egit]
-        I5 --> I7
-        I6 --> I7
-        I7 --> I8[predict Test]
-        I8 --> I9[fitness dogru_sayisi bolu test_adedi]
-    end
-    I -. icerir .-> I1
+## 3) ais_klonlama_ve_mutasyon Alt Akisi
 
-    subgraph F2[ais_klonlama_ve_mutasyon alt akisi]
-        M1[Fitnesse gore sirala] --> M2[En iyi n_secilen antikoru sec]
-        M2 --> M3[Secilen afiniteleri topla]
-        M3 --> M4{Toplam afinite sifir mi}
-        M4 -- Evet --> M5[Toplam afinitesi bir yap]
-        M4 -- Hayir --> M6[Devam et]
-        M5 --> M7[Her secilen antikor icin]
-        M6 --> M7
-        M7 --> M8[n_clones hesapla]
-        M8 --> M9[mutation_rate hesapla]
-        M9 --> M10[Her klonda her gen icin mutasyon dene]
-        M10 --> M11[Mutant klonu havuza ekle]
-        M11 --> M12[klon_populasyon olustur]
-    end
-    M -. icerir .-> M1
+```mermaid
+flowchart TD
+    A([Girdi: populasyon + antikor_fitness]) --> B[Fitnesse gore sirala]
+    B --> C[En iyi n_secilen antikoru sec]
+    C --> D[Secilen afiniteleri topla]
+    D --> E{Toplam afinite sifir mi?}
+    E -- Evet --> F[toplam_afinite = 1]
+    E -- Hayir --> G[Mevcut degeri kullan]
+    F --> H[Her secilen antikor icin]
+    G --> H
+    H --> I[n_clones hesapla]
+    I --> J[mutation_rate hesapla]
+    J --> K[Her klonda her gen icin mutasyon dene]
+    K --> L[Mutant klonlari havuza ekle]
+    L --> M([Cikti: klon_populasyon])
+```
 
-    subgraph F3[ais_secim alt akisi]
-        N1[Toplam klon sayisini al] --> N2[Her klonu egit ve klon_fitness hesapla]
-        N2 --> N3[Combined populasyon ve klonlar]
-        N3 --> N4[Fitnesse gore sirala]
-        N4 --> N5[Tekrarli bireyleri unique rows ile ele]
-        N5 --> N6[Yeni populasyon ve fitness alanini ayir]
-        N6 --> N7[En iyi benzersiz bireyleri yeni nesle kopyala]
-        N7 --> N8{Yeni nesil doldu mu}
-        N8 -- Hayir --> N9[Kalanlari rastgele doldur fitness sifir]
-        N8 -- Evet --> N10[Devam et]
-        N9 --> N10
-        N10 --> N11[Cesitlilik icin son d_degisecek bireyi yenile]
-        N11 --> N12[populasyon ve antikor_fitness guncelle]
-        N12 --> N13{En iyi deger guncellenecek mi}
-        N13 -- Evet --> N14[best_fitness ve best_antikor guncelle]
-        N13 -- Hayir --> N15[best degeri koru]
-    end
-    N -. icerir .-> N1
+## 4) ais_secim Alt Akisi
+
+```mermaid
+flowchart TD
+    A([Girdi: populasyon + antikor_fitness + klon_populasyon]) --> B[Toplam klon sayisini al]
+    B --> C[Her klonu egit ve klon_fitness hesapla]
+    C --> D[Populasyon ve klonlari birlestir]
+    D --> E[Fitnesse gore sirala]
+    E --> F[unique rows ile tekrarli bireyleri ele]
+    F --> G[Yeni populasyon ve fitness alanini ayir]
+    G --> H[En iyi benzersiz bireyleri kopyala]
+    H --> I{Yeni nesil doldu mu?}
+    I -- Hayir --> J[Kalanlari rastgele doldur; fitness = 0]
+    I -- Evet --> K[Doldurma adimini atla]
+    J --> L[Cesitlilik icin son d_degisecek bireyi yenile]
+    K --> L
+    L --> M[populasyon ve antikor_fitness guncelle]
+    M --> N{best_fitness guncellenecek mi?}
+    N -- Evet --> O[best_fitness ve best_antikor guncelle]
+    N -- Hayir --> P[best degeri koru]
+    O --> Q([Cikti: yeni populasyon + best])
+    P --> Q
 ```
