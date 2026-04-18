@@ -11,19 +11,19 @@ Ana akista cagri eslestirmesi:
 
 ```mermaid
 flowchart TD
-    A([Baslat: main.m]) --> B[CLONALG parametrelerini ayarla]
-    B --> C[Gen sinirlarini tanimla (6 gen)]
+    A([Baslat main.m]) --> B[CLONALG parametrelerini ayarla]
+    B --> C[Gen sinirlarini tanimla 6 gen]
     C --> D[veri_on_isleme]
-    D --> E[Ilk populasyonu olustur (n x m)]
+    D --> E[Ilk populasyonu olustur n x m]
     E --> F[ais_hesapla_fitness cagir]
     F --> G[Baslangic best_fitness ve best_antikor sec]
     G --> H[tic baslat]
-    H --> I{Iterasyon devam ediyor mu?}
+    H --> I{Iterasyon devam ediyor mu}
     I -- Evet --> J[ais_klonlama_ve_mutasyon cagir]
     J --> K[ais_secim cagir]
-    K --> L[history(j) = best_fitness]
+    K --> L[history degerini kaydet]
     L --> M[Iterasyon ozeti yazdir]
-    M --> N[j = j + 1]
+    M --> N[j degerini artir]
     N --> I
     I -- Hayir --> O[toc ile toplam sureyi al]
     O --> P[best_antikoru decode et]
@@ -42,14 +42,14 @@ flowchart TD
     A([Girdi: populasyon]) --> B[for i = 1..n]
     B --> C[Genleri coz: L1 L2 L3 act lambda katman_sayisi]
     C --> D{Katman sayisi}
-    D -- 1 --> E[layers = [L1]]
-    D -- 2 --> F[layers = [L1 L2]]
-    D -- 3 --> G[layers = [L1 L2 L3]]
+    D -- 1 --> E[layers L1]
+    D -- 2 --> F[layers L1 L2]
+    D -- 3 --> G[layers L1 L2 L3]
     E --> H[fitcnet ile modeli egit]
     F --> H
     G --> H
-    H --> I[predict(Test)]
-    I --> J[fitness(i) = dogru_sayisi / test_adedi]
+    H --> I[predict test]
+    I --> J[fitness dogru_sayisi bolu test_adedi]
     J --> K([Cikti: antikor_fitness])
 ```
 
@@ -60,7 +60,7 @@ flowchart TD
     A([Girdi: populasyon + antikor_fitness]) --> B[Fitnesse gore sirala]
     B --> C[En iyi n_secilen antikoru sec]
     C --> D[Secilen afiniteleri topla]
-    D --> E{Toplam afinite sifir mi?}
+    D --> E{Toplam afinite sifir mi}
     E -- Evet --> F[toplam_afinite = 1]
     E -- Hayir --> G[Mevcut degeri kullan]
     F --> H[Her secilen antikor icin]
@@ -83,13 +83,13 @@ flowchart TD
     E --> F[unique rows ile tekrarli bireyleri ele]
     F --> G[Yeni populasyon ve fitness alanini ayir]
     G --> H[En iyi benzersiz bireyleri kopyala]
-    H --> I{Yeni nesil doldu mu?}
-    I -- Hayir --> J[Kalanlari rastgele doldur; fitness = 0]
+    H --> I{Yeni nesil doldu mu}
+    I -- Hayir --> J[Kalanlari rastgele doldur fitness sifir]
     I -- Evet --> K[Doldurma adimini atla]
     J --> L[Cesitlilik icin son d_degisecek bireyi yenile]
     K --> L
     L --> M[populasyon ve antikor_fitness guncelle]
-    M --> N{best_fitness guncellenecek mi?}
+    M --> N{best_fitness guncellenecek mi}
     N -- Evet --> O[best_fitness ve best_antikor guncelle]
     N -- Hayir --> P[best degeri koru]
     O --> Q([Cikti: yeni populasyon + best])
